@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Charging</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main>
+    <header><span class="brand"><span class="bolt" aria-hidden="true">&#9889;</span> Charging</span><span id="connection" role="status">Connecting</span></header>
+    <section class="card" aria-label="Live charging status">
+      <div class="status-row"><h1 id="state">Reading your battery</h1><span class="live-dot" id="live-dot"></span></div>
+      <div class="charge-row"><div class="percentage"><span id="percent">&mdash;</span><span class="unit">%</span></div><p id="estimate">Waiting for a reading</p></div>
+      <progress id="battery-level" max="100" value="0" aria-label="Battery charge"></progress>
+      <div class="metrics">
+        <div><span class="label" id="battery-label">Battery power</span><strong id="battery-watts">&mdash;</strong><span class="hint" id="battery-hint">Net flow at the battery</span></div>
+        <div><span class="label">From adapter</span><strong id="adapter-watts">&mdash;</strong><span class="hint">Live input to your Mac</span></div>
+        <div><span class="label">Charger rating</span><strong id="rated-watts">&mdash;</strong><span class="hint">Capacity, not actual draw</span></div>
+      </div>
+      <section class="power-flow" aria-label="Power distribution">
+        <div class="chart-header"><h2>Where the power goes</h2><span>Live adapter draw</span></div>
+        <div class="flow-labels">
+          <div><span class="label">Battery</span><strong id="battery-share">&mdash;</strong></div>
+          <div><span class="label">Mac + losses</span><strong id="mac-share">&mdash;</strong></div>
+        </div>
+        <progress id="power-split" max="100" value="0" aria-label="Percentage of adapter draw going into the battery" hidden></progress>
+        <p class="detail-note" id="flow-note">Waiting for power readings.</p>
+        <div class="mac-load"><span class="label">Estimated Mac power use</span><strong id="mac-watts">&mdash;</strong></div>
+      </section>
+      <div class="chart-header"><h2>Battery power</h2><span>Last 2 minutes</span></div>
+      <svg id="chart" viewBox="0 0 600 120" role="img" aria-label="Battery power history. Positive is charging; negative is discharging.">
+        <line id="zero-line" x1="0" x2="600" y1="60" y2="60"></line>
+        <path id="history-line"></path>
+      </svg>
+      <div class="chart-footer"><span>+ charging / &minus; discharging</span><span id="range">Collecting readings</span></div>
+      <section class="insights" aria-label="Battery insights">
+        <div class="insight">
+          <div class="chart-header"><h2>Charging curve</h2><span>Since opening</span></div>
+          <svg class="trend-chart" viewBox="0 0 600 120" role="img" aria-label="Average charging watts by battery percentage">
+            <path class="chart-grid" d="M0 115H600 M0 60H600 M0 5H600"></path>
+            <path id="curve-line" class="trend-line"></path>
+          </svg>
+          <div class="chart-footer"><span>0% charge</span><span id="curve-range">Collecting readings</span><span>100%</span></div>
+          <p class="detail-note">Average watts at each charge level. Dots build into a curve as the battery fills.</p>
+        </div>
+        <div class="insight">
+          <div class="chart-header"><h2>Temperature</h2><span>Last 10 minutes</span></div>
+          <div class="trend-reading"><strong id="trend-temperature">&mdash;</strong><span id="temperature-change" class="label">Collecting readings</span></div>
+          <svg class="trend-chart" viewBox="0 0 600 120" role="img" aria-label="Battery temperature over the last ten minutes">
+            <path class="chart-grid" d="M0 115H600 M0 60H600 M0 5H600"></path>
+            <path id="temperature-line" class="trend-line warm"></path>
+          </svg>
+          <div class="chart-footer"><span>10 min ago</span><span id="temperature-range">&mdash;</span><span>Now</span></div>
+        </div>
+        <div class="insight">
+          <div class="chart-header"><h2>Cell balance</h2><span id="cell-spread">&mdash;</span></div>
+          <div id="cells" class="cells"><span class="label">Cell telemetry unavailable</span></div>
+          <p class="detail-note">Individual cell voltages. Spread is the difference between highest and lowest.</p>
+        </div>
+      </section>
+      <details>
+        <summary>Battery &amp; charger details</summary>
+        <dl>
+          <div><dt>Battery health</dt><dd id="health">&mdash;</dd></div>
+          <div><dt>Charge cycles</dt><dd id="cycles">&mdash;</dd></div>
+          <div><dt>Temperature</dt><dd id="temperature">&mdash;</dd></div>
+          <div><dt>Battery voltage</dt><dd id="voltage">&mdash;</dd></div>
+          <div><dt>Battery current</dt><dd id="current">&mdash;</dd></div>
+          <div><dt>Charger</dt><dd id="adapter-name">&mdash;</dd></div>
+          <div><dt>Reported adapter profile</dt><dd id="profile">&mdash;</dd></div>
+        </dl>
+        <p class="detail-note">Health is an estimate from full-charge versus design capacity. Adapter input includes your Mac's power use and charging losses. Unavailable readings appear as &mdash;.</p>
+      </details>
+    </section>
+    <p id="error" role="alert" hidden></p>
+    <footer>Only on this Mac. No cloud, no saved data.<br>Refreshes every 3 seconds while visible. Ctrl+C in the terminal to stop.</footer>
+  </main>
+</body>
+</html>
